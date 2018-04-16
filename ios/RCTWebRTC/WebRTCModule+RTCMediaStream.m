@@ -353,14 +353,6 @@ RCT_EXPORT_METHOD(mediaStreamTrackRelease:(nonnull NSString *)streamID : (nonnul
   }
 }
 
-RCT_EXPORT_METHOD(mediaStreamTrackSetEnabled:(nonnull NSString *)trackID : (BOOL)enabled)
-{
-  RTCMediaStreamTrack *track = self.localTracks[trackID];
-  if (track && track.isEnabled != enabled) {
-    track.isEnabled = enabled;
-  }
-}
-
 - (RTCMediaStreamTrack*)trackForId:(NSString*)trackId
 {
   RTCMediaStreamTrack *track = self.localTracks[trackId];
@@ -376,9 +368,17 @@ RCT_EXPORT_METHOD(mediaStreamTrackSetEnabled:(nonnull NSString *)trackID : (BOOL
   return track;
 }
 
-RCT_EXPORT_METHOD(mediaStreamTrackSwitchCamera:(nonnull NSString *)trackID)
+RCT_EXPORT_METHOD(mediaStreamTrackSetEnabled:(nonnull NSString *)trackID : (BOOL)enabled)
 {
   RTCMediaStreamTrack *track = [self trackForId:trackID];
+  if (track && track.isEnabled != enabled) {
+    track.isEnabled = enabled;
+  }
+}
+
+RCT_EXPORT_METHOD(mediaStreamTrackSwitchCamera:(nonnull NSString *)trackID)
+{
+  RTCMediaStreamTrack *track = self.localTracks[trackID];
   if (track) {
     RTCVideoTrack *videoTrack = (RTCVideoTrack *)track;
     RTCVideoSource *source = videoTrack.source;
