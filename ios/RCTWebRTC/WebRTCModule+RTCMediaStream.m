@@ -361,9 +361,24 @@ RCT_EXPORT_METHOD(mediaStreamTrackSetEnabled:(nonnull NSString *)trackID : (BOOL
   }
 }
 
+- (RTCMediaStreamTrack*)trackForId:(NSString*)trackId
+{
+  RTCMediaStreamTrack *track = self.localTracks[trackId];
+  if (!track) {
+    for (NSNumber *peerConnectionId in self.peerConnections) {
+      RTCPeerConnection *peerConnection = self.peerConnections[peerConnectionId];
+      track = peerConnection.remoteTracks[trackId];
+      if (track) {
+        break;
+      }
+    }
+  }
+  return track;
+}
+
 RCT_EXPORT_METHOD(mediaStreamTrackSwitchCamera:(nonnull NSString *)trackID)
 {
-  RTCMediaStreamTrack *track = self.localTracks[trackID];
+  RTCMediaStreamTrack *track = [self trackForId:trackID];
   if (track) {
     RTCVideoTrack *videoTrack = (RTCVideoTrack *)track;
     RTCVideoSource *source = videoTrack.source;
