@@ -139,6 +139,11 @@ public class WebRTCView extends ViewGroup {
     private ScalingType scalingType;
 
     /**
+     * Special layout for screencast video types to minimize react orientation lag impacts
+     */
+    private boolean isScreencast;
+
+    /**
      * The {@link View} and {@link VideoRenderer#Callbacks} implementation which
      * actually renders {@link #videoTrack} on behalf of this instance.
      */
@@ -162,6 +167,7 @@ public class WebRTCView extends ViewGroup {
         addView(surfaceViewRenderer);
 
         setMirror(false);
+        this.isScreencast = false;
         setScalingType(DEFAULT_SCALING_TYPE);
     }
 
@@ -290,6 +296,15 @@ public class WebRTCView extends ViewGroup {
                 frameRotation = this.frameRotation;
                 frameWidth = this.frameWidth;
                 scalingType = this.scalingType;
+                isScreencast = this.isScreencast;
+            }
+
+            if (isScreencast) {
+              int fudgeFactor = 50;
+              if ((width * 9) / 16  < height - fudgeFactor) {
+                height = Math.round((width * 9) / 16);
+                scalingType = ScalingType.SCALE_ASPECT_FILL;
+              }
             }
 
             SurfaceViewRenderer surfaceViewRenderer = getSurfaceViewRenderer();
@@ -409,8 +424,9 @@ public class WebRTCView extends ViewGroup {
      * {@code WebRTCView} i.e. {@code RTCView}.
      */
     public void setObjectFit(String objectFit) {
+        this.isScreencast = objectFit.toLowerCase().contains("screencast") ? true : false;
         ScalingType scalingType
-            = "cover".equals(objectFit)
+            = objectFit.toLowerCase().contains("cover")
                 ? ScalingType.SCALE_ASPECT_FILL
                 : ScalingType.SCALE_ASPECT_FIT;
 
