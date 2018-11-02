@@ -15,12 +15,18 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.ReactActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import org.webrtc.audio.JavaAudioDeviceModule;
+import org.webrtc.audio.JavaAudioDeviceModuleRabbit;
+import org.webrtc.audio.AudioDeviceModule;
+import org.webrtc.audio.JavaAudioDeviceModuleRabbit.AudioTrackParamsChangedCallback;
 
 import org.webrtc.*;
 
@@ -75,8 +81,27 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
             decoderFactory = new SoftwareVideoDecoderFactory();
         }
 
+        AudioTrackParamsChangedCallback audioTrackParamsChangedCallback = new AudioTrackParamsChangedCallback() {
+            @Override
+            public void onAudioTrackParamsChanged(int streamType, int usage, int contentType) {
+                Log.d(TAG, "onAudioTrackParamsChanged: " + streamType + " " + usage + " " + contentType);
+
+                if (mainActivity != null) {
+                    mainActivity.setVolumeControlStream(streamType);
+                } else {
+                    Log.d(TAG, "onAudioTrackParamsChanged no activity");
+                }
+            }
+        };
+
+        AudioDeviceModule adm = JavaAudioDeviceModuleRabbit.builder(reactContext)
+            .setAudioTrackParamsChangedCallback(audioTrackParamsChangedCallback)
+            .createAudioDeviceModule();
+
+
         mFactory
             = PeerConnectionFactory.builder()
+                .setAudioDeviceModule(adm)
                 .setVideoEncoderFactory(encoderFactory)
                 .setVideoDecoderFactory(decoderFactory)
                 .createPeerConnectionFactory();
@@ -979,5 +1004,10 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
         } else {
             pco.dataChannelSend(dataChannelId, data, type);
         }
+    }
+
+    private static ReactActivity mainActivity = null;
+    public static void setMainActivity(ReactActivity activity) {
+        mainActivity = activity;
     }
 }

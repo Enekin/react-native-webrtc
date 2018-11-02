@@ -12,6 +12,8 @@
 <uses-permission android:name="android.permission.RECORD_AUDIO" />
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+<uses-permission android:name="android.permission.BLUETOOTH"/>
 ```
 
 2.) In `android/settings.gradle`, includes WebRTCModule
