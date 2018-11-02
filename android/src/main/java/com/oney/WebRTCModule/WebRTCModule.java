@@ -385,6 +385,25 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
         return stream;
     }
 
+    private MediaStreamTrack getTrackForId(String trackId) {
+        MediaStreamTrack track = localTracks.get(trackId);
+
+        if (track == null) {
+            for (int i = 0, size = mPeerConnectionObservers.size();
+                    i < size;
+                    i++) {
+                PeerConnectionObserver pco
+                    = mPeerConnectionObservers.valueAt(i);
+                track = pco.remoteTracks.get(trackId);
+                if (track != null) {
+                    break;
+                }
+            }
+        }
+
+        return track;
+    }
+
     MediaStreamTrack getLocalTrack(String trackId) {
         return getUserMediaImpl.getTrack(trackId);
     }
@@ -588,7 +607,7 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
     }
 
     private void mediaStreamTrackSetEnabledAsync(String id, boolean enabled) {
-        MediaStreamTrack track = getLocalTrack(id);
+        MediaStreamTrack track = getTrackForId(id);
         if (track == null) {
             Log.d(TAG, "mediaStreamTrackSetEnabled() track is null");
             return;

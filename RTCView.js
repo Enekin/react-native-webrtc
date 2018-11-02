@@ -25,8 +25,10 @@ const RTCView = {
      * https://www.w3.org/TR/html5/embedded-content-0.html#dom-video-videowidth
      * and https://www.w3.org/TR/html5/rendering.html#video-object-fit,
      * resembles the CSS style object-fit.
+     *
+     * also special screencast types
      */
-    objectFit: PropTypes.oneOf(['contain', 'cover']),
+    objectFit: PropTypes.oneOf(['contain', 'cover', 'screencastContain', 'screencastCover']),
 
     streamURL: PropTypes.string,
 

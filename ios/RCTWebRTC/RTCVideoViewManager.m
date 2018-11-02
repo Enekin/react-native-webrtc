@@ -60,6 +60,11 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
 @property (nonatomic) RTCVideoViewObjectFit objectFit;
 
 /**
+ * Boolean for special screencast type determined from the objectFit param
+ */
+@property (nonatomic) BOOL isScreencast;
+
+/**
  * The {@link RTCEAGLVideoView} which implements the actual
  * {@link RTCVideoRenderer} of this instance and which this instance fits within
  * itself so that the rendered video preserves the aspect ratio of
@@ -179,6 +184,21 @@ typedef NS_ENUM(NSInteger, RTCVideoViewObjectFit) {
           self.bounds);
   }
 
+if (self.isScreencast) {
+    newValue = self.bounds;
+    newValue.origin.y = 0;
+    CGFloat fudgeFactor = 20;
+    CGFloat boundHeight = newValue.size.height;
+    CGFloat boundWidth = newValue.size.width;
+    CGFloat newBoundHeight = roundf((boundWidth * 9) / 16);
+    if (boundHeight > newBoundHeight + fudgeFactor ) {
+        newValue.size.height = newBoundHeight;
+    }
+    CGFloat newBoundWidth = roundf((newBoundHeight * 16) / 9);
+    newValue = AVMakeRectWithAspectRatioInsideRect(CGSizeMake(newBoundWidth, newBoundHeight), newValue);
+}
+    
+
   CGRect oldValue = subview.frame;
   if (newValue.origin.x != oldValue.origin.x
       || newValue.origin.y != oldValue.origin.y
@@ -296,11 +316,15 @@ RCT_EXPORT_VIEW_PROPERTY(mirror, BOOL)
 RCT_CUSTOM_VIEW_PROPERTY(objectFit, NSString *, RTCVideoView) {
   NSString *s = [RCTConvert NSString:json];
   RTCVideoViewObjectFit e
-    = (s && [s isEqualToString:@"cover"])
-      ? RTCVideoViewObjectFitCover
-      : RTCVideoViewObjectFitContain;
-
-  view.objectFit = e;
+    = (s && ([s isEqualToString:@"cover"] || [s isEqualToString:@"screencastCover"]))
+    ? RTCVideoViewObjectFitCover
+    : RTCVideoViewObjectFitContain;
+    
+    if ([s hasPrefix:@"screencast"]) {
+        view.isScreencast = true;
+    }
+    
+    view.objectFit = e;
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(streamURL, NSString *, RTCVideoView) {
