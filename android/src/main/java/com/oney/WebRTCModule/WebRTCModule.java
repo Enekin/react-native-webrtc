@@ -386,7 +386,7 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
     }
 
     private MediaStreamTrack getTrackForId(String trackId) {
-        MediaStreamTrack track = localTracks.get(trackId);
+        MediaStreamTrack track = this.getLocalTrack(trackId);
 
         if (track == null) {
             for (int i = 0, size = mPeerConnectionObservers.size();
