@@ -31,7 +31,7 @@ public class EglUtils {
             try {
                 // WebRTC internally does this check in isEGL14Supported, but it's no longer exposed
                 // in the public API
-                if (true || VERSION.SDK_INT >= 18) {
+                if (false && VERSION.SDK_INT >= 18) {
                     eglBase = EglBase.createEgl14(configAttributes);
                 }
             } catch (RuntimeException ex) {
