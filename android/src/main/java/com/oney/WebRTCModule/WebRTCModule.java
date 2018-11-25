@@ -1,5 +1,6 @@
 package com.oney.WebRTCModule;
 
+import android.app.Activity;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.util.SparseArray;
@@ -15,7 +16,6 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-import com.facebook.react.ReactActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1006,8 +1006,8 @@ public class WebRTCModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private static ReactActivity mainActivity = null;
-    public static void setMainActivity(ReactActivity activity) {
+    private static Activity mainActivity = null;
+    public static void setMainActivity(Activity activity) {
         mainActivity = activity;
     }
 }
